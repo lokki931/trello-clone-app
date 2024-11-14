@@ -31,10 +31,11 @@ yarn-error.log*
 
 # env files (can opt-in for commiting if needed)
 .env*
-
+.env
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+prisma/migrations/
