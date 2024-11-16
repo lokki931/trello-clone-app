@@ -7,7 +7,7 @@ export async function middleware(request: NextRequest) {
   const currentUrl = new URL(request.url);
 
   // Define protected paths
-  const protectedPaths = ['/org', '/board'];
+  const protectedPaths = ['/org', '/board', '/api'];
   const isProtectedPath = protectedPaths.some((path) => request.nextUrl.pathname.startsWith(path));
 
   // If the path is protected and the user is not authenticated, redirect to sign-in
@@ -35,5 +35,5 @@ export async function middleware(request: NextRequest) {
 
 // Specify which paths to run middleware on
 export const config = {
-  matcher: ['/org/:path*', '/', '/board/:path*'], // You can add more paths here if needed
+  matcher: ['/org/:path*', '/', '/board/:path*', '/api/:path*'], // You can add more paths here if needed
 };

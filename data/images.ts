@@ -2,21 +2,25 @@ export const boardImg = [
   {
     id: 'boardImg_1',
     src: '/images/board/fence.jpg',
+    thumb: '/images/board/thumbs/fence.jpg',
     alt: 'fence',
   },
   {
     id: 'boardImg_2',
     src: '/images/board/lamp.jpg',
+    thumb: '/images/board/thumbs/lamp.jpg',
     alt: 'lamp',
   },
   {
     id: 'boardImg_3',
     src: '/images/board/ruins.jpg',
+    thumb: '/images/board/thumbs/ruins.jpg',
     alt: 'ruins',
   },
   {
     id: 'boardImg_4',
     src: '/images/board/sea.jpg',
+    thumb: '/images/board/thumbs/sea.jpg',
     alt: 'sea',
   },
 ];
