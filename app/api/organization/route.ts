@@ -37,7 +37,5 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error fetching organizations for user:', error);
     return NextResponse.json({ error: 'Failed to fetch organizations' }, { status: 500 });
-  } finally {
-    await prisma.$disconnect();
   }
 }

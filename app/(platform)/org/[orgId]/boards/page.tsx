@@ -2,15 +2,18 @@
 import { useParams } from 'next/navigation';
 import { Headers } from '../_components/Headers';
 import { CreateBoard } from './_components/create-board';
+import { BoardsList } from './_components/boards-list';
 
 const OrgBoardPage = () => {
   const params = useParams();
+
   return (
     <div className="mt-5">
       <Headers orgId={params.orgId as string} />
-      <div className="mt-4">
+      <div className="mt-4 grid grid-cols-4 gap-4">
+        <BoardsList orgId={params.orgId as string} />
         <CreateBoard orgId={params.orgId as string}>
-          <div className="w-36 h-20 flex items-center justify-center text-cyan-50 bg-slate-800 hover:bg-white hover:text-black rounded-sm shadow-sm cursor-pointer transition">
+          <div className="h-36 flex items-center justify-center text-cyan-50 bg-slate-800 hover:bg-white hover:text-black rounded-sm shadow-sm cursor-pointer transition">
             Create Board
           </div>
         </CreateBoard>

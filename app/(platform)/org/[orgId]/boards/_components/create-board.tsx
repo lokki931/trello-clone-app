@@ -56,9 +56,9 @@ export const CreateBoard = ({ orgId, children }: CreateBoardProps) => {
         console.log('Board created:', board.id);
         resetForm();
         toast.success('Board created successfully!');
-        // setTimeout(() => {
-        //   router.push(`/board/${board.id}`);
-        // }, 1000);
+        setTimeout(() => {
+          router.push(`/board/${board.id}`);
+        }, 1000);
       } catch (error) {
         console.error('Error creating Board:', error);
         toast.error('Failed to create Board. Please try again.');
@@ -69,10 +69,7 @@ export const CreateBoard = ({ orgId, children }: CreateBoardProps) => {
   });
   return (
     <Popover>
-      <PopoverTrigger>
-        {children}
-        {orgId}
-      </PopoverTrigger>
+      <PopoverTrigger>{children}</PopoverTrigger>
       <PopoverContent align="end">
         <div className="flex items-center justify-between">
           <span>Create Board</span>
