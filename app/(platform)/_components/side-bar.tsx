@@ -31,7 +31,11 @@ export const SideBar = () => {
         if (!response.ok) throw new Error('Failed to fetch organizations');
         const data: Organization[] = await response.json();
         setOrganizations(data);
-        if (data.length > 0 && orgId) setOpenItems([orgId as string]);
+        if (data.length > 0 && orgId) {
+          setOpenItems([orgId as string]);
+        } else {
+          setOpenItems([]);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An unknown error occurred');
       } finally {

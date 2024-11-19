@@ -49,7 +49,7 @@ export const BoardsList = ({ orgId }: BoardsListProps) => {
       {boards.map((board) => (
         <div
           key={board.id}
-          className="h-36 flex items-center justify-center  rounded-sm shadow-sm cursor-pointer transition bg-center bg-cover relative"
+          className="h-36 flex items-center justify-center  rounded-sm shadow-sm cursor-pointer transition bg-center bg-cover relative hover:opacity-75"
           style={{ backgroundImage: `url(${board.imgThumb})` }}
           onClick={() => router.push(`/board/${board.id}`)}>
           <span className="text-white z-10">{board.title}</span>
