@@ -53,7 +53,7 @@ export const BoardsList = ({ orgId }: BoardsListProps) => {
           style={{ backgroundImage: `url(${board.imgThumb})` }}
           onClick={() => router.push(`/board/${board.id}`)}>
           <span className="text-white z-10">{board.title}</span>
-          <div className="w-full h-full absolute left-0 right-0 bg-slate-500/50" />
+          <div className="w-full h-full absolute left-0 right-0 bg-slate-500/35" />
         </div>
       ))}
     </>

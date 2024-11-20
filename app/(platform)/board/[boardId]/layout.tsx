@@ -4,6 +4,8 @@ import { useParams } from 'next/navigation';
 import { Board } from '@prisma/client';
 import { SideBar } from '../../_components/side-bar';
 import { BoardHeader } from './_components/board-header';
+import { BoardOption } from './_components/board-option';
+import { Kanban } from 'lucide-react';
 
 const BoardIdlayout = ({ children }: { children: React.ReactNode }) => {
   const { boardId } = useParams();
@@ -55,8 +57,13 @@ const BoardIdlayout = ({ children }: { children: React.ReactNode }) => {
           <SideBar />
         </div>
         <div className="grid-in-content ml-5">{children}</div>
-        <div className="grid-in-title bg-slate-500/50 pl-5 flex items-center py-5">
+        <div className="grid-in-title bg-slate-500/50 p-5 flex gap-2 justify-between items-center">
           {board && <BoardHeader data={board} />}
+          <div className="mr-auto inline-flex items-center bg-slate-100 p-1 rounded-sm">
+            <Kanban />
+            <span className="font-mono text-sm">Board</span>
+          </div>
+          {board && <BoardOption id={board.id} orgId={board.organizationId} />}
         </div>
       </main>
     </div>
