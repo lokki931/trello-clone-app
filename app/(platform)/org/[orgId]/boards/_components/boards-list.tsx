@@ -10,7 +10,6 @@ interface BoardsListProps {
 
 export const BoardsList = ({ orgId }: BoardsListProps) => {
   const [boards, setBoards] = useState<Board[]>([]);
-  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   useEffect(() => {
@@ -21,7 +20,7 @@ export const BoardsList = ({ orgId }: BoardsListProps) => {
         const data: Board[] = await response.json();
         setBoards(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An unknown error occurred');
+        console.log(err instanceof Error ? err.message : 'An unknown error occurred');
       } finally {
         setIsLoading(false);
       }
@@ -39,10 +38,6 @@ export const BoardsList = ({ orgId }: BoardsListProps) => {
         <Skeleton className="h-36" />
       </>
     );
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
   }
   return (
     <>

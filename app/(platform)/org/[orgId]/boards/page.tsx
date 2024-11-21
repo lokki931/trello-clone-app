@@ -1,6 +1,5 @@
 'use client';
 import { useParams } from 'next/navigation';
-import { Headers } from '../_components/Headers';
 import { CreateBoard } from './_components/create-board';
 import { BoardsList } from './_components/boards-list';
 
@@ -8,8 +7,7 @@ const OrgBoardPage = () => {
   const params = useParams();
 
   return (
-    <div className="mt-5">
-      <Headers orgId={params.orgId as string} />
+    <div>
       <div className="mt-4 grid grid-cols-4 gap-4">
         <BoardsList orgId={params.orgId as string} />
         <CreateBoard orgId={params.orgId as string}>
