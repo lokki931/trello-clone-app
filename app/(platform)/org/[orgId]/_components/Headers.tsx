@@ -11,6 +11,7 @@ import { EllipsisVertical } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { OrgName } from './org-name';
 interface HeadersProps {
   orgId: string;
 }
@@ -88,6 +89,9 @@ export function Headers({ orgId }: HeadersProps) {
           <EllipsisVertical className="hover:bg-white cursor-pointer rounded-sm" />
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56">
+          <DropdownMenuItem asChild>
+            {organization && <OrgName data={organization} />}
+          </DropdownMenuItem>
           <DropdownMenuItem className="cursor-pointer" onClick={handleDelete}>
             Delete Workspase
           </DropdownMenuItem>
