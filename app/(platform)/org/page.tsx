@@ -72,13 +72,11 @@ const OrganizationPage = () => {
     <div className=" m-5">
       <form onSubmit={formik.handleSubmit} className="max-w-md p-6 space-y-4 rounded shadow">
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-            Title
-          </label>
           <Input
             id="title"
             name="title"
             type="text"
+            placeholder="Enter title organization"
             className="mt-1 w-full border-gray-300 rounded-md"
             onChange={formik.handleChange}
             value={formik.values.title}
@@ -102,7 +100,7 @@ const OrganizationPage = () => {
           {formik.errors.img && <p className="text-red-600 text-sm">{formik.errors.img}</p>}
         </div>
 
-        <Button type="submit" variant="ghost" className="mt-4">
+        <Button type="submit" className="mt-4">
           Submit
         </Button>
       </form>

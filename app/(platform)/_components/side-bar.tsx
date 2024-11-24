@@ -17,7 +17,6 @@ import { Activity, LayoutGrid, Plus } from 'lucide-react';
 export const SideBar = () => {
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [openItems, setOpenItems] = useState<string[]>([]);
-  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const { orgId } = useParams();
@@ -37,7 +36,7 @@ export const SideBar = () => {
           setOpenItems([]);
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An unknown error occurred');
+        console.log(err instanceof Error ? err.message : 'An unknown error occurred');
       } finally {
         setIsLoading(false);
       }
@@ -71,10 +70,6 @@ export const SideBar = () => {
     );
   }
 
-  if (error) {
-    return <p className="text-red-500">Error: {error}</p>;
-  }
-
   return (
     <div className="mt-5">
       <Button
@@ -85,7 +80,7 @@ export const SideBar = () => {
         <Plus />
       </Button>
       {organizations.length === 0 ? (
-        <p>No organizations found</p>
+        <p className="px-5">No organizations found</p>
       ) : (
         <Accordion
           type="multiple"
