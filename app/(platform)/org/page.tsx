@@ -18,6 +18,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
 import { orgIcon } from '@/data/images';
+import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { X } from 'lucide-react';
 
 const OrganizationPage = () => {
   const { data: session } = useSession();
@@ -70,40 +72,58 @@ const OrganizationPage = () => {
 
   return (
     <div className=" m-5">
-      <form onSubmit={formik.handleSubmit} className="max-w-md p-6 space-y-4 rounded shadow">
-        <div>
-          <Input
-            id="title"
-            name="title"
-            type="text"
-            placeholder="Enter title organization"
-            className="mt-1 w-full border-gray-300 rounded-md"
-            onChange={formik.handleChange}
-            value={formik.values.title}
-          />
-          {formik.errors.title && <p className="text-red-600 text-sm">{formik.errors.title}</p>}
-        </div>
+      <Popover>
+        <PopoverTrigger>
+          <div className="h-32 p-3 flex items-center justify-center text-cyan-50 bg-slate-800 hover:bg-white hover:text-black rounded-sm shadow-sm cursor-pointer transition">
+            Create Organization
+          </div>
+        </PopoverTrigger>
+        <PopoverContent align="end">
+          <div className="flex items-center justify-between mb-2">
+            <span>Create Organization</span>
+            <PopoverClose>
+              <X />
+            </PopoverClose>
+          </div>
+          <form onSubmit={formik.handleSubmit} className="w-full">
+            <div className="w-full mb-2">
+              <Input
+                id="title"
+                name="title"
+                type="text"
+                placeholder="Enter title organization"
+                className="w-full border-gray-300 rounded-md"
+                onChange={formik.handleChange}
+                value={formik.values.title}
+              />
+              {formik.errors.title && <p className="text-red-600 text-sm">{formik.errors.title}</p>}
+            </div>
 
-        <div>
-          <Select onValueChange={(value) => formik.setFieldValue('img', value)}>
-            <SelectTrigger className="w-[80px]">
-              <SelectValue placeholder="icon" />
-            </SelectTrigger>
-            <SelectContent>
-              {orgIcon.map((icon) => (
-                <SelectItem key={icon.id} value={icon.src}>
-                  <Image src={icon.src} width={35} height={35} alt={icon.alt} />
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {formik.errors.img && <p className="text-red-600 text-sm">{formik.errors.img}</p>}
-        </div>
+            <div className="w-full mb-2">
+              <Select onValueChange={(value) => formik.setFieldValue('img', value)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="icon" />
+                </SelectTrigger>
+                <SelectContent>
+                  {orgIcon.map((icon) => (
+                    <SelectItem key={icon.id} value={icon.src}>
+                      <div className="inline-flex items-center gap-x-3">
+                        <Image src={icon.src} width={35} height={35} alt={icon.alt} />
+                        <span>{icon.alt}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {formik.errors.img && <p className="text-red-600 text-sm">{formik.errors.img}</p>}
+            </div>
 
-        <Button type="submit" className="mt-4">
-          Submit
-        </Button>
-      </form>
+            <Button type="submit" className="h-8 w-full">
+              Submit
+            </Button>
+          </form>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 };
