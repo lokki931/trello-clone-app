@@ -52,11 +52,11 @@ const BoardIdlayout = ({ children }: { children: React.ReactNode }) => {
     <div
       className="bg-cover bg-center min-h-[calc(100%-4.5rem)]"
       style={{ backgroundImage: `url(${board?.imgFull})` }}>
-      <main className="grid grid-areas-layout grid-cols-layout grid-rows-layout h-full px-4 max-w-screen-2xl mx-auto">
+      <main className="grid grid-areas-layout grid-cols-layout items-stretch grid-rows-layout px-4 max-w-screen-2xl mx-auto min-h-[calc(100vh-4.5rem)]">
         <div className="grid-in-bar bg-slate-500 p-5 ">
           <SideBar />
         </div>
-        <div className="grid-in-content ml-5">{children}</div>
+        <div className="grid-in-content ml-5 min-h-full">{children}</div>
         <div className="grid-in-title bg-slate-500/50 p-5 flex gap-2 justify-between items-center">
           {board && <BoardHeader data={board} />}
           <div className="mr-auto inline-flex items-center bg-slate-100 p-1 rounded-sm">

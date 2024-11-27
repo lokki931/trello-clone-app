@@ -13,10 +13,10 @@ const config: Config = {
         layout: ['bar title title', 'bar content content', 'bar content content'],
       },
       gridTemplateColumns: {
-        layout: '20% 1fr 1fr',
+        layout: '250px 1fr 1fr',
       },
       gridTemplateRows: {
-        layout: '15% 1fr 1fr',
+        layout: '1fr minmax(0, 100%) 1fr',
       },
       colors: {
         background: 'hsl(var(--background))',

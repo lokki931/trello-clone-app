@@ -3,14 +3,14 @@ import { useState } from 'react';
 import { Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useFormik } from 'formik';
-import { List } from '@prisma/client';
 import * as Yup from 'yup';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
+import { ListData } from '../page';
 
 interface ListCreateProps {
   id: string;
-  setData: React.Dispatch<React.SetStateAction<List[]>>;
+  setData: React.Dispatch<React.SetStateAction<ListData[]>>;
 }
 
 const validationSchema = Yup.object().shape({
@@ -53,7 +53,7 @@ export const ListCreate = ({ id, setData }: ListCreateProps) => {
     },
   });
   return (
-    <div className="w-72 bg-slate-300 p-2 rounded-sm shadow-sm">
+    <div className="min-w-[228px] bg-slate-300 p-2 rounded-sm shadow-sm">
       {!open ? (
         <Button variant="ghost" className="w-full justify-start h-8" onClick={() => setOpen(true)}>
           <Plus />

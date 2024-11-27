@@ -23,7 +23,13 @@ export async function GET(request: NextRequest) {
       where: {
         boardId,
       },
+
       orderBy: { order: 'asc' },
+      include: {
+        tasks: {
+          orderBy: { order: 'asc' },
+        },
+      },
     });
 
     if (lists.length === 0) {
