@@ -4,9 +4,10 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea/dnd';
 import { ListCreate } from './_components/list-create';
-import { ListComponent } from './_components/list';
 import { Task } from '@prisma/client';
 import { toast } from 'sonner';
+import { ListOption } from './_components/list/list-option';
+import { CreateTask } from './_components/list/create-task';
 
 export interface ListData {
   id: string;
@@ -21,9 +22,9 @@ const BoardIdPage = () => {
   const [loading, setLoading] = useState(false);
   const onDragEnd = async (result: DropResult) => {
     const { source, destination, type } = result;
-    if (!destination) return;
+    if (!destination) return; // No drop destination
 
-    let updatedLists = [...lists];
+    let updatedLists = [...lists]; // Make a shallow copy of lists
 
     if (type === 'column') {
       // Reorder lists
@@ -44,42 +45,87 @@ const BoardIdPage = () => {
         console.log('Updated lists:', updatedLists);
       }
     }
-
     if (type === 'task') {
       const sourceList = updatedLists.find((list) => list.id === source.droppableId);
       const destinationList = updatedLists.find((list) => list.id === destination.droppableId);
 
-      if (!sourceList || !destinationList) return;
+      if (!sourceList || !destinationList) {
+        console.error('Source or destination list not found');
+        return;
+      }
 
-      // Reorder tasks within or across lists
-      const sourceTasks = Array.from(sourceList.tasks);
-      const destinationTasks = Array.from(destinationList.tasks);
-      const [movedTask] = sourceTasks.splice(source.index, 1);
-      destinationTasks.splice(destination.index, 0, movedTask);
+      // Ensure valid index (in case task is dropped into an invalid spot)
+      if (
+        source.index < 0 ||
+        source.index >= sourceList.tasks.length ||
+        destination.index < 0 ||
+        destination.index > destinationList.tasks.length
+      ) {
+        console.error('Invalid task index');
+        return;
+      }
 
-      updatedLists = updatedLists.map((list) =>
-        list.id === sourceList.id
-          ? { ...list, tasks: sourceTasks }
-          : list.id === destinationList.id
-          ? { ...list, tasks: destinationTasks }
-          : list,
-      );
+      // Create independent copies of the task arrays
+      const sourceTasks = [...sourceList.tasks];
+      const destinationTasks = [...destinationList.tasks];
 
-      // Send the updated task orders to the server
-      const [sourceSuccess, destinationSuccess] = await Promise.all([
-        saveTaskOrder(sourceList.id, sourceTasks),
-        saveTaskOrder(destinationList.id, destinationTasks),
-      ]);
+      if (sourceList.id === destinationList.id) {
+        // Move task within the same list
+        const [movedTask] = sourceTasks.splice(source.index, 1); // Remove from source index
+        sourceTasks.splice(destination.index, 0, movedTask); // Insert at destination index
 
-      if (!sourceSuccess || !destinationSuccess) {
-        console.log('Failed to update task order.');
+        updatedLists = updatedLists.map((list) =>
+          list.id === sourceList.id ? { ...list, tasks: sourceTasks } : list,
+        );
+
+        // Save updated task order for the source list
+        try {
+          const success = await saveTaskOrder(sourceList.id, sourceTasks);
+          if (success) {
+            toast('Task order updated!');
+          } else {
+            toast.error('Failed to save task order for the list.');
+          }
+        } catch (error) {
+          console.error('Error saving task order:', error);
+          toast.error('An error occurred while saving task order.');
+        }
       } else {
-        toast('Task update success!');
-        console.log('Updated tasks:', updatedLists);
+        // Move task to a different list
+        const [movedTask] = sourceTasks.splice(source.index, 1); // Remove from source
+        destinationTasks.splice(destination.index, 0, movedTask); // Add to destination
+
+        updatedLists = updatedLists.map((list) => {
+          if (list.id === sourceList.id) {
+            return { ...list, tasks: sourceTasks }; // Update source list
+          }
+          if (list.id === destinationList.id) {
+            return { ...list, tasks: destinationTasks }; // Update destination list
+          }
+          return list; // Keep other lists unchanged
+        });
+
+        // Save updated task orders for both lists
+        try {
+          const [sourceSuccess, destinationSuccess] = await Promise.all([
+            saveTaskOrder(sourceList.id, sourceTasks),
+            saveTaskOrder(destinationList.id, destinationTasks),
+          ]);
+
+          if (sourceSuccess && destinationSuccess) {
+            toast('Task order updated!');
+          } else {
+            toast.error('Failed to save task order for one or more lists.');
+          }
+        } catch (error) {
+          console.error('Error saving task order:', error);
+          toast.error('An error occurred while saving task orders.');
+        }
       }
     }
 
-    setLists(updatedLists); // Update state
+    // Update state with the new list order
+    setLists(updatedLists);
   };
 
   // Function to save updated list order
@@ -106,7 +152,7 @@ const BoardIdPage = () => {
   // Function to save updated task order
   const saveTaskOrder = async (listId: string, tasks: Task[]) => {
     try {
-      const response = await fetch(`/api/updateTaskOrder`, {
+      const response = await fetch(`/api/list/updateTaskOrder`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -171,18 +217,19 @@ const BoardIdPage = () => {
                   <div
                     ref={provided.innerRef}
                     {...provided.draggableProps}
+                    className="min-w-[228px] bg-slate-900 text-white p-2 rounded-sm shadow-sm"
                     style={{
                       ...provided.draggableProps.style,
                     }}>
                     <div {...provided.dragHandleProps}>
-                      <ListComponent data={list} setData={setLists} />
+                      <div className="flex justify-between items-center h-8 p-2">
+                        <span>{list.title}</span>
+                        <ListOption id={list.id} setData={setLists} />
+                      </div>
                     </div>
                     <Droppable droppableId={list.id} type="task">
                       {(provided) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.droppableProps}
-                          style={{ minHeight: 100 }}>
+                        <div ref={provided.innerRef} {...provided.droppableProps} className="py-2">
                           {list.tasks?.map((task, taskIndex) => (
                             <Draggable key={task.id} draggableId={task.id} index={taskIndex}>
                               {(provided) => (
@@ -194,6 +241,7 @@ const BoardIdPage = () => {
                                     padding: 8,
                                     margin: '8px 0',
                                     background: '#fff',
+                                    color: '#000',
                                     borderRadius: 4,
                                     boxShadow: '0px 1px 3px rgba(0,0,0,0.2)',
                                     ...provided.draggableProps.style,
@@ -207,6 +255,7 @@ const BoardIdPage = () => {
                         </div>
                       )}
                     </Droppable>
+                    <CreateTask id={list.id} setData={setLists} />
                   </div>
                 )}
               </Draggable>
