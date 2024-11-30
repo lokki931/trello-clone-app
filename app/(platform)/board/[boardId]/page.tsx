@@ -8,6 +8,7 @@ import { Task } from '@prisma/client';
 import { toast } from 'sonner';
 import { ListOption } from './_components/list/list-option';
 import { CreateTask } from './_components/list/create-task';
+import { ListTitle } from './_components/list/list-title';
 
 export interface ListData {
   id: string;
@@ -222,9 +223,9 @@ const BoardIdPage = () => {
                       ...provided.draggableProps.style,
                     }}>
                     <div {...provided.dragHandleProps}>
-                      <div className="flex justify-between items-center h-8 p-2">
-                        <span>{list.title}</span>
-                        <ListOption id={list.id} setData={setLists} />
+                      <div className="flex justify-between items-center gap-x-2 h-8 p-2">
+                        <ListTitle id={list.id} title={list.title} setData={setLists} />
+                        <ListOption id={list.id} boardId={boardId} setData={setLists} />
                       </div>
                     </div>
                     <Droppable droppableId={list.id} type="task">
@@ -266,14 +267,6 @@ const BoardIdPage = () => {
         )}
       </Droppable>
     </DragDropContext>
-    // <DragDropContext onDragEnd={onDragEnd}>
-    //   <div className="pt-5 flex items-start gap-x-5 overflow-x-auto min-h-full">
-    //     {lists?.map((list) => (
-    //       <ListComponent key={list.id} data={list} setData={setLists} />
-    //     ))}
-    //     <ListCreate id={boardId} setData={setLists} />
-    //   </div>
-    // </DragDropContext>
   );
 };
 

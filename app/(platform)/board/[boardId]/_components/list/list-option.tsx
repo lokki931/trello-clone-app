@@ -12,9 +12,10 @@ import { ListData } from '../../page';
 interface ListOptionProps {
   id: string;
   setData: React.Dispatch<React.SetStateAction<ListData[]>>;
+  boardId: string;
 }
 
-export const ListOption = ({ id, setData }: ListOptionProps) => {
+export const ListOption = ({ id, setData, boardId }: ListOptionProps) => {
   const handleDelete = async () => {
     try {
       const response = await fetch(`/api/list/${id}/delete`, {
@@ -38,6 +39,30 @@ export const ListOption = ({ id, setData }: ListOptionProps) => {
       console.error('Error making DELETE request:', error);
     }
   };
+  const handleCopy = async () => {
+    try {
+      const response = await fetch(`/api/list/${id}/copy`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ boardId }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        toast(`Error copy list: ${errorData}`);
+        return;
+      }
+
+      const newList = await response.json();
+
+      toast.success(`${newList.title} - created successfully!`);
+      setData((prevLists) => [...prevLists, newList]);
+    } catch (error) {
+      console.error('Error making DELETE request:', error);
+    }
+  };
 
   return (
     <DropdownMenu>
@@ -45,6 +70,9 @@ export const ListOption = ({ id, setData }: ListOptionProps) => {
         <Ellipsis className="cursor-pointer hover:text-slate-500" />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
+        <DropdownMenuItem className="cursor-pointer" onClick={handleCopy}>
+          Copy List
+        </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer" onClick={handleDelete}>
           Delete List
         </DropdownMenuItem>
