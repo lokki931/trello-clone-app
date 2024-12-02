@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { ListOption } from './_components/list/list-option';
 import { CreateTask } from './_components/list/create-task';
 import { ListTitle } from './_components/list/list-title';
+import TaskDialog from './_components/dialog';
 
 export interface ListData {
   id: string;
@@ -21,6 +22,7 @@ const BoardIdPage = () => {
   const { boardId } = useParams<{ boardId: string }>();
   const [lists, setLists] = useState<ListData[]>([]);
   const [loading, setLoading] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task>();
   const onDragEnd = async (result: DropResult) => {
     const { source, destination, type } = result;
     if (!destination) return; // No drop destination
@@ -199,74 +201,86 @@ const BoardIdPage = () => {
 
   if (loading)
     return (
-      <div className="mt-5">
+      <div className="mt-5 fixed right-5 bottom-5">
         <div className="animate-spin rounded-full h-6 w-6 border-t-4 border-b-4 border-blue-500"></div>
       </div>
     );
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="all-lists" direction="horizontal" type="column">
-        {(provided) => (
-          <div
-            ref={provided.innerRef}
-            {...provided.droppableProps}
-            className="pt-5 flex items-start gap-x-5 overflow-x-auto min-h-full">
-            {lists?.map((list, index) => (
-              <Draggable draggableId={list.id} index={index} key={list.id}>
-                {(provided) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    className="min-w-[228px] bg-slate-900 text-white p-2 rounded-sm shadow-sm"
-                    style={{
-                      ...provided.draggableProps.style,
-                    }}>
-                    <div {...provided.dragHandleProps}>
-                      <div className="flex justify-between items-center gap-x-2 h-8 p-2">
-                        <ListTitle id={list.id} title={list.title} setData={setLists} />
-                        <ListOption id={list.id} boardId={boardId} setData={setLists} />
-                      </div>
-                    </div>
-                    <Droppable droppableId={list.id} type="task">
-                      {(provided) => (
-                        <div ref={provided.innerRef} {...provided.droppableProps} className="py-2">
-                          {list.tasks?.map((task, taskIndex) => (
-                            <Draggable key={task.id} draggableId={task.id} index={taskIndex}>
-                              {(provided) => (
-                                <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                  style={{
-                                    padding: 8,
-                                    margin: '8px 0',
-                                    background: '#fff',
-                                    color: '#000',
-                                    borderRadius: 4,
-                                    boxShadow: '0px 1px 3px rgba(0,0,0,0.2)',
-                                    ...provided.draggableProps.style,
-                                  }}>
-                                  {task.title}
-                                </div>
-                              )}
-                            </Draggable>
-                          ))}
-                          {provided.placeholder}
+    <>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId="all-lists" direction="horizontal" type="column">
+          {(provided) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              className="pt-5 flex items-start gap-x-5 overflow-x-auto min-h-full">
+              {lists?.map((list, index) => (
+                <Draggable draggableId={list.id} index={index} key={list.id}>
+                  {(provided) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      className="min-w-[228px] bg-slate-900 text-white p-2 rounded-sm shadow-sm"
+                      style={{
+                        ...provided.draggableProps.style,
+                      }}>
+                      <div {...provided.dragHandleProps}>
+                        <div className="flex justify-between items-center gap-x-2 h-8 p-2">
+                          <ListTitle id={list.id} title={list.title} setData={setLists} />
+                          <ListOption id={list.id} boardId={boardId} setData={setLists} />
                         </div>
-                      )}
-                    </Droppable>
-                    <CreateTask id={list.id} setData={setLists} />
-                  </div>
-                )}
-              </Draggable>
-            ))}
-            {provided.placeholder}
-            <ListCreate id={boardId} setData={setLists} />
-          </div>
-        )}
-      </Droppable>
-    </DragDropContext>
+                      </div>
+                      <Droppable droppableId={list.id} type="task">
+                        {(provided) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                            className="py-2">
+                            {list.tasks?.map((task, taskIndex) => (
+                              <Draggable key={task.id} draggableId={task.id} index={taskIndex}>
+                                {(provided) => (
+                                  <div
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                    style={{
+                                      padding: 8,
+                                      margin: '8px 0',
+                                      background: '#fff',
+                                      color: '#000',
+                                      borderRadius: 4,
+                                      boxShadow: '0px 1px 3px rgba(0,0,0,0.2)',
+                                      ...provided.draggableProps.style,
+                                    }}>
+                                    <div onClick={() => setSelectedTask(task)}>{task.title}</div>
+                                  </div>
+                                )}
+                              </Draggable>
+                            ))}
+                            {provided.placeholder}
+                          </div>
+                        )}
+                      </Droppable>
+                      <CreateTask id={list.id} setData={setLists} />
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+              <ListCreate id={boardId} setData={setLists} />
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
+      {selectedTask && (
+        <TaskDialog
+          data={selectedTask}
+          setData={setLists}
+          onClose={() => setSelectedTask(undefined)}
+        />
+      )}
+    </>
   );
 };
 
