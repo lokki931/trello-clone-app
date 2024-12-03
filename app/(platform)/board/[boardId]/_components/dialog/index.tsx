@@ -10,6 +10,7 @@ import {
 import { Task } from '@prisma/client';
 import { ListData } from '../../page';
 import { TaskTitle } from './task-title';
+import { TaskDescription } from './task-desc';
 interface TaskDialogProps {
   data: Task;
   onClose: () => void;
@@ -38,10 +39,17 @@ export default function TaskDialog({ data, onClose, setData }: TaskDialogProps) 
           <DialogTitle>
             <TaskTitle title={data.title} id={data.id} listId={data.listId} setData={setData} />
           </DialogTitle>
-          <DialogDescription>{data?.description}</DialogDescription>
+          {/* <DialogDescription>{data?.description}</DialogDescription> */}
         </DialogHeader>
-        <div className="flex items-start justify-between gap-x-4">
-          <div className="grow">Desription</div>
+        <div className="flex items-stretch justify-between gap-x-4">
+          <div className="grow">
+            <TaskDescription
+              description={data.description as string}
+              id={data.id}
+              listId={data.listId}
+              setData={setData}
+            />
+          </div>
           <div className="basis-1/4 flex flex-col gap-2">
             <h4 className="font-semibold text-sm italic">Action</h4>
             <p>Copy</p>
