@@ -11,6 +11,7 @@ import { Task } from '@prisma/client';
 import { ListData } from '../../page';
 import { TaskTitle } from './task-title';
 import { TaskDescription } from './task-desc';
+import { TaskActions } from './task-actions';
 interface TaskDialogProps {
   data: Task;
   onClose: () => void;
@@ -51,15 +52,9 @@ export default function TaskDialog({ data, onClose, setData }: TaskDialogProps) 
             />
           </div>
           <div className="basis-1/4 flex flex-col gap-2">
-            <h4 className="font-semibold text-sm italic">Action</h4>
-            <p>Copy</p>
-            <p>Remove</p>
+            <TaskActions id={data.id} listId={data.listId} setData={setData} onClose={onClose} />
           </div>
         </div>
-        <p>Todo ID: {data.id}</p>
-        <button onClick={() => onClose()} className="mt-4 px-4 py-2 bg-red-500 text-white rounded">
-          Close
-        </button>
       </DialogContent>
     </Dialog>
   );

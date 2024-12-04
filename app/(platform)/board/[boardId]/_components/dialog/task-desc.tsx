@@ -65,7 +65,7 @@ export const TaskDescription = ({ id, listId, description, setData }: listTitleP
       {!open ? (
         <div
           onClick={handleClick}
-          className="min-h-10 h-full p-2 text-sm cursor-pointer hover:opacity-60 rounded-sm border">
+          className="min-h-[80px] p-2 text-sm cursor-pointer hover:opacity-60 rounded-sm border">
           {formik.values.description || 'Enter description...'}{' '}
           {/* Fallback for when data is undefined */}
         </div>
