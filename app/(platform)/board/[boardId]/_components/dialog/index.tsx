@@ -20,27 +20,12 @@ interface TaskDialogProps {
 export default function TaskDialog({ data, onClose, setData }: TaskDialogProps) {
   return (
     <Dialog open={!!data} onOpenChange={(open) => !open && onClose()}>
-      {/* <DialogTrigger>
-          setData((prevLists) =>
-            prevLists.map((list) =>
-              list.id === data.listId
-                ? {
-                    ...list,
-                    tasks: list.tasks.map((task) =>
-                      task.id === data.id ? { ...task, title: newTitle } : task
-                    ),
-                  }
-                : list
-            )
-          );
-        <button className="px-4 py-2 bg-blue-500 text-white rounded">View Todo</button>
-      </DialogTrigger> */}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
             <TaskTitle title={data.title} id={data.id} listId={data.listId} setData={setData} />
           </DialogTitle>
-          {/* <DialogDescription>{data?.description}</DialogDescription> */}
+          <DialogDescription className="text-xs">More data about: {data.title}</DialogDescription>
         </DialogHeader>
         <div className="flex items-stretch justify-between gap-x-4">
           <div className="grow">

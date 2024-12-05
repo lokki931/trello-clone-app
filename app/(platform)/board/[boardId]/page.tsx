@@ -25,30 +25,29 @@ const BoardIdPage = () => {
   const [selectedTask, setSelectedTask] = useState<Task>();
   const onDragEnd = async (result: DropResult) => {
     const { source, destination, type } = result;
-    if (!destination) return; // No drop destination
+    if (!destination) return; // No valid drop target
 
-    let updatedLists = [...lists]; // Make a shallow copy of lists
+    let updatedLists: ListData[] = [...lists]; // Shallow copy of lists
 
     if (type === 'column') {
       // Reorder lists
-      const newListOrder = Array.from(updatedLists);
-      const [movedList] = newListOrder.splice(source.index, 1);
-      newListOrder.splice(destination.index, 0, movedList);
-      updatedLists = newListOrder.map((list, index) => ({
-        ...list,
-        order: index,
-      }));
+      const [movedList] = updatedLists.splice(source.index, 1);
+      updatedLists.splice(destination.index, 0, movedList);
 
-      // Send the updated list order to the server
-      const success = await saveListOrder(updatedLists);
-      if (!success) {
-        console.log('Failed to update list order.');
-      } else {
-        toast('Update success!');
-        console.log('Updated lists:', updatedLists);
+      updatedLists = updatedLists.map((list, index) => ({ ...list, order: index }));
+
+      try {
+        const success = await saveListOrder(updatedLists);
+        if (success) {
+          toast('List order updated!');
+        } else {
+          toast.error('Failed to update list order.');
+        }
+      } catch (error) {
+        console.error('Error saving list order:', error);
+        toast.error('An error occurred while saving the list order.');
       }
-    }
-    if (type === 'task') {
+    } else if (type === 'task') {
       const sourceList = updatedLists.find((list) => list.id === source.droppableId);
       const destinationList = updatedLists.find((list) => list.id === destination.droppableId);
 
@@ -57,37 +56,22 @@ const BoardIdPage = () => {
         return;
       }
 
-      // Ensure valid index (in case task is dropped into an invalid spot)
-      if (
-        source.index < 0 ||
-        source.index >= sourceList.tasks.length ||
-        destination.index < 0 ||
-        destination.index > destinationList.tasks.length
-      ) {
-        console.error('Invalid task index');
-        return;
-      }
-
-      // Create independent copies of the task arrays
       const sourceTasks = [...sourceList.tasks];
       const destinationTasks = [...destinationList.tasks];
 
+      const [movedTask] = sourceTasks.splice(source.index, 1);
+
       if (sourceList.id === destinationList.id) {
         // Move task within the same list
-        const [movedTask] = sourceTasks.splice(source.index, 1); // Remove from source index
-        sourceTasks.splice(destination.index, 0, movedTask); // Insert at destination index
+        sourceTasks.splice(destination.index, 0, movedTask);
+        updatedLists = updateListTasks(updatedLists, sourceList.id, sourceTasks);
 
-        updatedLists = updatedLists.map((list) =>
-          list.id === sourceList.id ? { ...list, tasks: sourceTasks } : list,
-        );
-
-        // Save updated task order for the source list
         try {
           const success = await saveTaskOrder(sourceList.id, sourceTasks);
           if (success) {
             toast('Task order updated!');
           } else {
-            toast.error('Failed to save task order for the list.');
+            toast.error('Failed to save task order.');
           }
         } catch (error) {
           console.error('Error saving task order:', error);
@@ -95,20 +79,18 @@ const BoardIdPage = () => {
         }
       } else {
         // Move task to a different list
-        const [movedTask] = sourceTasks.splice(source.index, 1); // Remove from source
-        destinationTasks.splice(destination.index, 0, movedTask); // Add to destination
+        destinationTasks.splice(destination.index, 0, movedTask);
+        const updatedDestinationTasks = destinationTasks.map((task) => ({
+          ...task,
+          listId: destinationList.id,
+        }));
 
-        updatedLists = updatedLists.map((list) => {
-          if (list.id === sourceList.id) {
-            return { ...list, tasks: sourceTasks }; // Update source list
-          }
-          if (list.id === destinationList.id) {
-            return { ...list, tasks: destinationTasks }; // Update destination list
-          }
-          return list; // Keep other lists unchanged
-        });
+        updatedLists = updateListTasks(
+          updateListTasks(updatedLists, sourceList.id, sourceTasks),
+          destinationList.id,
+          updatedDestinationTasks,
+        );
 
-        // Save updated task orders for both lists
         try {
           const [sourceSuccess, destinationSuccess] = await Promise.all([
             saveTaskOrder(sourceList.id, sourceTasks),
@@ -121,14 +103,18 @@ const BoardIdPage = () => {
             toast.error('Failed to save task order for one or more lists.');
           }
         } catch (error) {
-          console.error('Error saving task order:', error);
+          console.error('Error saving task orders:', error);
           toast.error('An error occurred while saving task orders.');
         }
       }
     }
 
-    // Update state with the new list order
-    setLists(updatedLists);
+    setLists(updatedLists); // Update the state
+  };
+
+  // Helper function to update a specific list's tasks
+  const updateListTasks = (lists: ListData[], listId: string, newTasks: Task[]) => {
+    return lists.map((list) => (list.id === listId ? { ...list, tasks: newTasks } : list));
   };
 
   // Function to save updated list order
