@@ -20,6 +20,7 @@ model User {
   Authenticator Authenticator[]
   organizations Organization[]
   boards       Board[]
+  activities  Activity[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -95,6 +96,8 @@ model Organization {
   updatedAt DateTime   @updatedAt
 }
 
+
+
 model Board {
   id               String      @id @default(uuid())
   title            String
@@ -105,6 +108,7 @@ model Board {
   organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   createdById      String
   createdBy        User        @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  activities  Activity[]
   createdAt        DateTime    @default(now())
   updatedAt        DateTime    @updatedAt
 }
@@ -116,6 +120,7 @@ model List {
   boardId   String
   board     Board     @relation(fields: [boardId], references: [id], onDelete: Cascade)
   tasks     Task[]
+  activities  Activity[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }
@@ -127,6 +132,23 @@ model Task {
   order       Int       @default(0)
   listId      String
   list        List      @relation(fields: [listId], references: [id], onDelete: Cascade)
+  activities  Activity[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
+
+model Activity {
+  id          String      @id @default(uuid())
+  actionType  String 
+  description String?     
+  boardId     String?
+  board       Board?      @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  listId      String?
+  list        List?       @relation(fields: [listId], references: [id], onDelete: Cascade)
+  taskId      String?
+  task        Task?       @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  performedById String
+  performedBy User        @relation(fields: [performedById], references: [id], onDelete: Cascade)
+  createdAt   DateTime    @default(now())
+}
+

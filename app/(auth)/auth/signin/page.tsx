@@ -1,11 +1,17 @@
 'use client';
-import { signIn, signOut } from 'next-auth/react';
+import { Button } from '@/components/ui/button';
+import { signIn } from 'next-auth/react';
+import Image from 'next/image';
 
 export default function SignIn() {
   return (
-    <div>
-      <h1>Sign in</h1>
-      <button onClick={() => signIn('github', { callbackUrl: '/org' })}>Sign in with GitHub</button>
+    <div className="w-full h-screen grid place-items-center">
+      <div className="flex flex-col gap-5 items-center">
+        <Image src={'/logo.png'} width={32} height={32} alt="tarello" />
+        <Button onClick={() => signIn('github', { callbackUrl: '/org' })}>
+          Sign in with GitHub
+        </Button>
+      </div>
     </div>
   );
 }
