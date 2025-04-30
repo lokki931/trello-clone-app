@@ -44,4 +44,4 @@ A simple Trello clone built with **NextJs**, **React**, **Prisma/SQlite**,  and 
 ...
 
 📬 Contact
-GitHub: @lokki931
+GitHub: [@lokki931](https://github.com/lokki931) 
