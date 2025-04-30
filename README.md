@@ -32,11 +32,15 @@ A simple Trello clone built with **NextJs**, **React**, **Prisma/SQlite**,  and 
 1. Clone the repository:
    ```bash
    git clone https://github.com/lokki931/trello-clone-app.git
-Navigate into the project directory:
-cd trello-clone-app
-Install dependencies:
-npm install
-Start the development server:
+2. Navigate into the project directory:
+   ```bash
+   cd trello-clone-app
+3. Install dependencies:
+   ```bash
+   npm install
+4. Start the development server:
+   ```bash
+   npm run dev
 ...
 
 📬 Contact
